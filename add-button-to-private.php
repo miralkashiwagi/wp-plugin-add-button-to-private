@@ -3,7 +3,7 @@
 /*
 Plugin Name: 売約ボタンを追加するプラグイン
 Description: 売約ボタンを追加するプラグイン
-Version: 1.0
+Version: 1.1
 Author: a.kobayashi
 */
 
