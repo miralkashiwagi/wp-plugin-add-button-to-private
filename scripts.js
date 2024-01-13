@@ -1,6 +1,6 @@
 //売約ボタンを押した時の処理
 function abtpPromptForName(postID, postTitle) {
-  var name = prompt("苗字を入れてください。" + postTitle + "を売約します。");
+  var name = prompt("苗字を入れてください。");
   if (name === "") {
     abtpPromptForName(postID, postTitle);
   } else if (name !== null) {
