@@ -102,7 +102,7 @@ EOF;
 
     if (isset($_POST[$opt_name_title])) {
         // POST されたデータを取得
-        $opt_val_content = $_POST[$opt_name_title];
+        $opt_val_title = $_POST[$opt_name_title];
         // POST された値を$opt_name=$opt_valでデータベースに保存(wp_options テーブル内に保存)
         update_option($opt_name_title, $opt_val_title);
 
@@ -115,7 +115,7 @@ EOF;
 
         }
 
-        // 画面にメッセージを表示
+            // 画面にメッセージを表示
         $message_html = <<<EOF
 <div class="notice notice-success is-dismissible">
 	<p>
@@ -200,16 +200,7 @@ function abtp_shortcode_button($atts, $content, $tag)
         <input type="hidden" name="abtp_name" id="abtp_name_' . $this_post_id . '" value="">
         <button type="submit" id="submitButton_' . $this_post_id . '" style="display: none;">売約実行</button>
     </form>
-    <button onclick="promptForName(' . $this_post_id . ')">売約</button>
-    <script>
-        function promptForName(postID) {
-            var name = prompt("名前を入れてください");
-            if (name != null) {
-                document.getElementById("abtp_name_"+postID).value = name;
-                document.getElementById("submitButton_"+postID).click();
-            }
-        }
-    </script>';
+    <button onclick="abtpPromptForName(' . $this_post_id . ',`'. get_the_title( $this_post_id ).'`)">売約</button>';
 
     return $form;
 }
@@ -220,6 +211,16 @@ function abtp_shortcodes_init(){
     add_shortcode('abtp_button', 'abtp_shortcode_button');
 }
 add_action('init', 'abtp_shortcodes_init');
+
+
+//=================================================
+// 売約ボタン用のJavaScript出力
+//=================================================
+
+function abtp_load_scripts(){
+    wp_enqueue_script('abtb', plugin_dir_url( __FILE__ ).'/scripts.js', array());
+}
+add_action('wp_footer', 'abtp_load_scripts');
 
 
 //=================================================
@@ -250,7 +251,7 @@ function abtp_check_form_submission()
         $to = get_option($opt_name_to); // Retrieve the email recipient from the options table
 
         $raw_subject = get_option($opt_name_title);
-        $subject = str_replace(array('{title}'), array($post_title), $raw_subject);
+        $subject = str_replace(array('{name}', '{title}'), array($name, $post_title), $raw_subject);
 
         $raw_message = get_option($opt_name_content);
         $message_body = str_replace(array('{name}', '{title}'), array($name, $post_title), $raw_message);
@@ -278,6 +279,11 @@ function abtp_check_form_submission()
             <script>
                 //URLパラメータがあったらクリーンする
                 var clean_url = window.location.protocol + "//" + window.location.host + window.location.pathname;
+                
+                //データをストレージに保存する
+                sessionStorage.setItem('abtp_name', "<?php echo $name; ?>");
+                sessionStorage.setItem('abtp_post_title', "<?php echo $post_title; ?>");
+
                 //クリーン済みのURLでリロード
                 window.location = clean_url;
             </script>
