@@ -243,6 +243,12 @@ function abtp_check_form_submission()
         $post_id = sanitize_text_field($_POST['abtp_postid']);
         $post_title = sanitize_text_field($_POST['abtp_posttitle']);
 
+        //投稿ステータスチェック
+        if(get_post_status($post_id)==='private'){
+            echo $post_title.'はすでに売約済みです。';
+            exit;
+        }
+
         //投稿ステータスを非公開に変更
         $my_post = array('ID' => $post_id, 'post_status' => 'private');
         wp_update_post($my_post);
