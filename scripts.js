@@ -5,7 +5,6 @@ function abtpPromptForName(postID, postTitle) {
     abtpPromptForName(postID, postTitle);
   } else if (name !== null) {
     document.getElementById("abtp_name_" + postID).value = name;
-    console.log(name);
     document.getElementById("submitButton_" + postID).click();
   }
 }
