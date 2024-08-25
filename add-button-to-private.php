@@ -3,7 +3,7 @@
 /*
 Plugin Name: 売約ボタンを追加するプラグイン
 Description: 売約ボタンを追加するプラグイン
-Version: 1.1
+Version: 1.2
 Author: a.kobayashi
 */
 
@@ -249,9 +249,6 @@ function abtp_check_form_submission()
             exit;
         }
 
-        //投稿ステータスを非公開に変更
-        $my_post = array('ID' => $post_id, 'post_status' => 'private');
-        wp_update_post($my_post);
 
         //メール送信
         $to = get_option($opt_name_to); // Retrieve the email recipient from the options table
@@ -281,7 +278,12 @@ function abtp_check_form_submission()
         }
 
         //メールを送信したうえで、送信後に処理を実行
-        if(wp_mail( $to, $subject, $message_body, $headers, $attachments)):  ?>
+        if(wp_mail( $to, $subject, $message_body, $headers, $attachments)):
+
+            //投稿ステータスを非公開に変更
+            $my_post = array('ID' => $post_id, 'post_status' => 'private');
+            wp_update_post($my_post);
+            ?>
             <script>
                 //URLパラメータがあったらクリーンする
                 var clean_url = window.location.protocol + "//" + window.location.host + window.location.pathname;
@@ -293,7 +295,12 @@ function abtp_check_form_submission()
                 //クリーン済みのURLでリロード
                 window.location = clean_url;
             </script>
-        <?php endif;
+        <?php
+        else:
+            echo $post_title.'の処理に失敗しました。再度操作してください';
+            exit;
+        endif;
     }
 }
+
 add_action( 'init', 'abtp_check_form_submission' );
